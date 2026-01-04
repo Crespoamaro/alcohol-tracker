@@ -11,7 +11,7 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* --- ESTRUCTURA PRINCIPAL --- */
+/* ESTRUCTURA PRINCIPAL */
 body { 
     font-family: 'Roboto', sans-serif; 
     background-color: var(--bg-color); 
@@ -19,29 +19,20 @@ body {
     margin: 0; padding: 0;
     height: 100dvh; 
     overflow: hidden; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: flex; justify-content: center; align-items: center;
 }
 
 .app-container { 
-    width: 100%; 
-    height: 100%; 
-    background: var(--card-bg);
-    display: flex;
-    flex-direction: column; 
-    position: relative;
+    width: 100%; height: 100%; background: var(--card-bg);
+    display: flex; flex-direction: column; position: relative;
     padding-bottom: var(--nav-height); 
 }
 
-/* --- CABECERA --- */
+/* CABECERA */
 header { 
-    flex: 0 0 auto; 
-    z-index: 10;
-    background: rgba(18, 18, 18, 0.95);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-    padding: 15px 20px;
+    flex: 0 0 auto; z-index: 10;
+    background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border); padding: 15px 20px;
     display: flex; flex-direction: column; align-items: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
@@ -53,29 +44,29 @@ h2#month-display { font-size: 1.1rem; margin: 2px 0 10px 0; font-weight: 700; te
 }
 #grand-total { color: var(--success); font-weight: 700; font-size: 1.2rem; }
 
-/* --- CONTENIDO --- */
+/* CONTENIDO (Scroll) */
 .view-section {
-    flex: 1; 
-    overflow-y: auto; 
-    padding: 20px;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 40px; 
-    scrollbar-width: thin;
-    scrollbar-color: #333 #121212;
+    flex: 1; overflow-y: auto; padding: 20px; width: 100%;
+    -webkit-overflow-scrolling: touch; padding-bottom: 40px; 
+    scrollbar-width: thin; scrollbar-color: #333 #121212;
 }
 
 #dashboard, .history-container { max-width: 100%; margin: 0 auto; }
 
-/* Copyright */
+/* --- COPYRIGHT (Estilo Global para Móvil y PC) --- */
 .copyright {
-    text-align: center; font-size: 0.75rem; color: #444;
-    margin-top: 40px; margin-bottom: 10px; padding-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #444;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    padding-top: 20px;
     border-top: 1px dashed #222;
+    width: 100%;
 }
 .copyright span { color: var(--accent); font-weight: bold; }
 
-/* --- UI COMPONENTS --- */
+/* UI COMPONENTS */
 .category-group { margin-bottom: 15px; border-radius: 16px; overflow: hidden; background: #1a1a1a; border: 1px solid var(--border); }
 .group-header { padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #252525; transition: background 0.2s; }
 .group-header:active { background: #333; }
@@ -101,6 +92,7 @@ h2#month-display { font-size: 1.1rem; margin: 2px 0 10px 0; font-weight: 700; te
 .btn-plus { background: var(--accent); color: white; }
 .material-symbols-rounded { font-size: 20px; }
 
+/* ESTADÍSTICAS */
 .stats-card { background: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
 .stat-row { margin-bottom: 15px; }
 .stat-row:last-child { margin-bottom: 0; }
@@ -124,30 +116,14 @@ h2#month-display { font-size: 1.1rem; margin: 2px 0 10px 0; font-weight: 700; te
 .pill-btn { background: none; border: none; color: #888; padding: 8px 20px; border-radius: 40px; font-size: 0.85rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
 .pill-btn.active { background: #333; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-/* --- GRÁFICA DIARIA --- */
-
-/* 1. EL CONTENEDOR define la altura */
+/* GRÁFICA DIARIA */
 .chart-container-x { 
-    background: #1e1e1e; 
-    border: 1px solid #333; 
-    border-radius: 12px; 
-    padding: 15px; 
-    overflow-x: auto; 
-    height: 220px; 
-    display: flex;
-    align-items: flex-end;
+    background: #1e1e1e; border: 1px solid #333; border-radius: 12px; padding: 15px; overflow-x: auto; 
+    height: 220px; display: flex; align-items: flex-end; 
 }
-
-/* LA LISTA INTERNA */
 .chart-scroll { 
-    display: flex; 
-    align-items: flex-end; 
-    gap: 12px; 
-    height: 100%; /* Ocupa el 100% del contenedor padre */
-    min-width: 100%; 
-    padding-bottom: 5px; 
+    display: flex; align-items: flex-end; gap: 12px; height: 100%; min-width: 100%; padding-bottom: 5px; 
 }
-
 .bar-group { display: flex; flex-direction: column; align-items: center; gap: 5px; flex: 1; min-width: 35px; }
 .bar-val { font-size: 0.75rem; color: #fff; font-weight: bold; }
 .bar-visual { width: 18px; background: #333; border-radius: 6px; transition: height 0.5s ease; min-height: 4px; position: relative; }
@@ -161,13 +137,10 @@ h2#month-display { font-size: 1.1rem; margin: 2px 0 10px 0; font-weight: 700; te
 .log-vol { font-size: 0.9rem; color: var(--success); font-weight: bold; }
 .empty-msg { color: #666; text-align: center; font-style: italic; padding: 20px; }
 
-/* --- FOOTER --- */
+/* FOOTER */
 .bottom-nav { 
-    position: fixed; bottom: 0; left: 0; 
-    width: 100%; 
-    height: var(--nav-height); 
-    background: #1e1e1e; 
-    border-top: 1px solid #333; 
+    position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-height); 
+    background: #1e1e1e; border-top: 1px solid #333; 
     display: flex; justify-content: space-around; align-items: center; 
     z-index: 1000; padding-bottom: env(safe-area-inset-bottom); 
 }
@@ -175,31 +148,19 @@ h2#month-display { font-size: 1.1rem; margin: 2px 0 10px 0; font-weight: 700; te
 .nav-btn span.material-symbols-rounded { font-size: 28px; }
 .nav-btn.active { color: var(--accent); }
 
-
-/* --- MODO PC --- */
+/* MODO PC */
 @media (min-width: 768px) {
     .app-container {
-        max-width: 900px;
-        margin: 0 auto; 
-        border-left: 1px solid #333;
-        border-right: 1px solid #333;
+        max-width: 900px; margin: 0 auto; 
+        border-left: 1px solid #333; border-right: 1px solid #333;
         box-shadow: 0 0 50px rgba(0,0,0,0.5);
     }
     .bottom-nav {
-        max-width: 900px;
-        left: 50%;
-        transform: translateX(-50%);
-        border-left: 1px solid #333;
-        border-right: 1px solid #333;
+        max-width: 900px; left: 50%; transform: translateX(-50%);
+        border-left: 1px solid #333; border-right: 1px solid #333;
     }
     #tracker-container {
-        display: grid;
-        grid-template-columns: 1fr 1fr; 
-        gap: 20px;
-        align-items: start;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;
     }
-    
-    .chart-container-x {
-        height: 320px;
-    }
+    .chart-container-x { height: 320px; }
 }
