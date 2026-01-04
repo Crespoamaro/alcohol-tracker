@@ -1,18 +1,27 @@
 import { addDrinkToDb, removeLastDrinkFromDb } from './db.js';
 import { DRINK_CATALOG, monthsNames, currentMonthIdx } from './config.js';
 
-// 1. PINTAR TRACKER (Botones + -)
 export function initTrackerUI() {
     const container = document.getElementById('tracker-container');
+    if (!container) return;
     container.innerHTML = ''; 
+
     for (const [catKey, catData] of Object.entries(DRINK_CATALOG)) {
         const section = document.createElement('section');
         section.className = 'category-group';
         section.innerHTML = `
-            <div class="group-header" onclick="this.nextElementSibling.classList.toggle('expanded'); this.classList.toggle('open');">
-                <h3>${catData.title}</h3><span class="material-symbols-rounded arrow">expand_more</span>
+            <div class="group-header">
+                <h3>${catData.title}</h3>
+                <span class="material-symbols-rounded arrow">expand_more</span>
             </div>
-            <div id="list-${catKey}" class="drink-list"></div>`;
+            <div id="list-${catKey}" class="drink-list"></div>
+        `;
+        const header = section.querySelector('.group-header');
+        const list = section.querySelector('.drink-list');
+        header.onclick = () => {
+            const isOpen = list.classList.toggle('expanded');
+            header.classList.toggle('open', isOpen);
+        };
         container.appendChild(section);
     }
 }
@@ -20,6 +29,7 @@ export function initTrackerUI() {
 export function updateTrackerList(currentMonthCounts) {
     for (const [catKey, catData] of Object.entries(DRINK_CATALOG)) {
         const listContainer = document.getElementById(`list-${catKey}`);
+        if (!listContainer) continue;
         listContainer.innerHTML = '';
         catData.items.forEach(item => {
             const count = currentMonthCounts[item.id] || 0;
@@ -40,114 +50,91 @@ export function updateTrackerList(currentMonthCounts) {
     }
 }
 
-// 2. HISTORIAL: ANUAL
 export function renderStats(categorySums, grandTotal) {
     const container = document.getElementById('stats-container');
+    if (!container) return;
     container.innerHTML = '';
-    const cats = [
+    const stats = [
         { label: 'Cervezas', val: categorySums.beers, css: 'fill-beers' },
         { label: 'Cubatas', val: categorySums.spirits, css: 'fill-spirits' },
         { label: 'Chupitos', val: categorySums.shots, css: 'fill-shots' },
         { label: 'Vinos/Otros', val: categorySums.others, css: 'fill-others' }
     ];
-    cats.forEach(cat => {
-        const percent = grandTotal > 0 ? (cat.val / grandTotal) * 100 : 0;
-        const row = document.createElement('div');
-        row.className = 'stat-row';
-        row.innerHTML = `<div class="stat-header"><span>${cat.label}</span><span class="stat-val">${cat.val.toFixed(2)} L (${Math.round(percent)}%)</span></div><div class="progress-bg"><div class="progress-fill ${cat.css}" style="width: ${percent}%"></div></div>`;
-        container.appendChild(row);
+    stats.forEach(s => {
+        const pct = grandTotal > 0 ? (s.val / grandTotal) * 100 : 0;
+        const div = document.createElement('div');
+        div.className = 'stat-row';
+        div.innerHTML = `
+            <div class="stat-header"><span>${s.label}</span><span class="stat-val">${s.val.toFixed(2)} L</span></div>
+            <div class="progress-bg"><div class="progress-fill ${s.css}" style="width: ${pct}%"></div></div>`;
+        container.appendChild(div);
     });
 }
 
 export function renderHistory(monthlySums) {
     const container = document.getElementById('history-list');
+    if (!container) return;
     container.innerHTML = '';
-    monthlySums.forEach((total, index) => {
-        if (total > 0 || index <= currentMonthIdx) {
+    monthlySums.forEach((total, idx) => {
+        if (total > 0 || idx <= currentMonthIdx) {
             const card = document.createElement('div');
-            card.className = `history-card ${index === currentMonthIdx ? 'current' : ''}`;
-            card.innerHTML = `<div class="month-name">${monthsNames[index]}</div><div class="month-total">${total.toFixed(3)} L</div>`;
+            card.className = `history-card ${idx === currentMonthIdx ? 'current' : ''}`;
+            card.innerHTML = `<span class="month-name">${monthsNames[idx]}</span><span class="month-total">${total.toFixed(3)} L</span>`;
             container.appendChild(card);
         }
     });
 }
 
-// 3. HISTORIAL: DIARIO (GRÁFICA Y LOG)
 export function renderDailyChart(dailySums) {
     const container = document.getElementById('daily-chart');
+    const label = document.getElementById('daily-month-name');
+    if (!container || !label) return;
     container.innerHTML = '';
-    document.getElementById('daily-month-name').textContent = monthsNames[currentMonthIdx];
-
-    const maxVal = Math.max(...dailySums, 0.5); 
-    const today = new Date().getDate();
-    
-    dailySums.slice(0, today).forEach((val, index) => {
-        const heightPercent = (val / maxVal) * 100;
+    label.textContent = monthsNames[currentMonthIdx];
+    const max = Math.max(...dailySums, 0.5);
+    dailySums.forEach((v, i) => {
         const bar = document.createElement('div');
         bar.className = 'bar-group';
-        bar.innerHTML = `
-            <span class="bar-val">${val > 0 ? val.toFixed(1) : ''}</span>
-            <div class="bar-visual ${val > 0 ? 'active' : ''}" style="height: ${Math.max(heightPercent, 5)}%"></div>
-            <span class="bar-day">${index + 1}</span>
-        `;
+        bar.innerHTML = `<span class="bar-val">${v > 0 ? v.toFixed(1) : ''}</span><div class="bar-visual ${v > 0 ? 'active' : ''}" style="height: ${(v/max)*100}%"></div><span class="bar-day">${i+1}</span>`;
         container.appendChild(bar);
     });
-    setTimeout(() => { container.scrollLeft = container.scrollWidth; }, 100);
 }
 
-export function renderRecentLog(recentLog) {
+export function renderRecentLog(log) {
     const container = document.getElementById('recent-log-list');
-    container.innerHTML = '';
-    if (recentLog.length === 0) {
-        container.innerHTML = '<div class="empty-msg">Sin tragos este mes.</div>';
-        return;
-    }
-    recentLog.forEach(log => {
-        const item = document.createElement('div');
-        item.className = 'log-item';
-        item.innerHTML = `
-            <div class="log-date">Día ${log.day}<br><small>${log.hour}</small></div>
-            <div class="log-desc">${log.name}</div>
-            <div class="log-vol">${log.vol} L</div>
-        `;
-        container.appendChild(item);
-    });
+    if (!container) return;
+    container.innerHTML = log.map(l => `
+        <div class="drink-row">
+            <div>Día ${l.day} - ${l.hour}<br><small>${l.name}</small></div>
+            <div style="color:var(--success); font-weight:bold;">${l.vol} L</div>
+        </div>`).join('') || '<div class="empty-msg">No hay registros este mes.</div>';
 }
 
-// 4. GESTIÓN DE PESTAÑAS
 export function initNavigation() {
-    const btnTracker = document.getElementById('nav-tracker');
-    const btnHistory = document.getElementById('nav-history');
-    
-    btnTracker.onclick = () => {
+    const btnT = document.getElementById('nav-tracker');
+    const btnH = document.getElementById('nav-history');
+    btnT.onclick = () => {
         document.getElementById('view-tracker').style.display = 'block';
         document.getElementById('view-history').style.display = 'none';
-        btnTracker.classList.add('active'); btnHistory.classList.remove('active');
+        btnT.classList.add('active'); btnH.classList.remove('active');
         document.getElementById('header-title').innerText = "CONTROL MENSUAL";
     };
-
-    btnHistory.onclick = () => {
+    btnH.onclick = () => {
         document.getElementById('view-tracker').style.display = 'none';
         document.getElementById('view-history').style.display = 'block';
-        btnTracker.classList.remove('active'); btnHistory.classList.add('active');
+        btnT.classList.remove('active'); btnH.classList.add('active');
         document.getElementById('header-title').innerText = "HISTORIAL AÑO";
     };
-
-    const btnSubYear = document.getElementById('btn-sub-year');
-    const btnSubMonth = document.getElementById('btn-sub-month');
-    const viewSubYear = document.getElementById('subview-year');
-    const viewSubMonth = document.getElementById('subview-month');
-
-    btnSubYear.onclick = () => {
-        viewSubYear.style.display = 'block'; viewSubMonth.style.display = 'none';
-        btnSubYear.classList.add('active'); btnSubMonth.classList.remove('active');
+    document.getElementById('btn-sub-year').onclick = () => {
+        document.getElementById('subview-year').style.display = 'block';
+        document.getElementById('subview-month').style.display = 'none';
+        document.getElementById('btn-sub-year').classList.add('active');
+        document.getElementById('btn-sub-month').classList.remove('active');
     };
-    btnSubMonth.onclick = () => {
-        viewSubYear.style.display = 'none'; viewSubMonth.style.display = 'block';
-        btnSubYear.classList.remove('active'); btnSubMonth.classList.add('active');
-        setTimeout(() => { 
-            const chart = document.getElementById('daily-chart');
-            chart.scrollLeft = chart.scrollWidth; 
-        }, 50);
+    document.getElementById('btn-sub-month').onclick = () => {
+        document.getElementById('subview-year').style.display = 'none';
+        document.getElementById('subview-month').style.display = 'block';
+        document.getElementById('btn-sub-year').classList.remove('active');
+        document.getElementById('btn-sub-month').classList.add('active');
     };
 }
