@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alcohol Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <header>
+            <h1 id="header-title">CONTROL MENSUAL</h1>
+            <h2 id="month-display">CARGANDO...</h2>
+            <div class="total-pill">
+                <span>TOTAL AÑO:</span>
+                <span id="grand-total">0.00 L</span>
+            </div>
+        </header>
+
+        <div id="view-tracker" class="view-section active">
+            <div id="dashboard">
+                <div id="tracker-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="view-history" class="view-section" style="display: none;">
+            
+            <div class="pill-nav-container">
+                <div class="pill-nav">
+                    <button id="btn-sub-year" class="pill-btn active">Resumen Año</button>
+                    <button id="btn-sub-month" class="pill-btn">Diario Mes</button>
+                </div>
+            </div>
+
+            <div id="subview-year">
+                <div class="history-container">
+                    <h3>Estadísticas Globales</h3>
+                    <div id="stats-container" class="stats-card"></div>
+                </div>
+                <div class="history-container">
+                    <h3>Desglose por Meses</h3>
+                    <div id="history-list"></div>
+                </div>
+            </div>
+
+            <div id="subview-month" style="display: none;">
+                
+                <div class="history-container">
+                    <h3>Evolución Diaria (<span id="daily-month-name"></span>)</h3>
+                    <div class="chart-container-x">
+                        <div id="daily-chart" class="chart-scroll"></div>
+                    </div>
+                </div>
+
+                <div class="history-container">
+                    <h3>Registro de Tragos</h3>
+                    <div id="recent-log-list">
+                        </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <button id="nav-tracker" class="nav-btn active">
+            <span class="material-symbols-rounded">local_bar</span>
+            <span>Tracker</span>
+        </button>
+        <button id="nav-history" class="nav-btn">
+            <span class="material-symbols-rounded">history</span>
+            <span>Historial</span>
+        </button>
+    </nav>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
