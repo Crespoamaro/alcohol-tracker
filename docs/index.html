@@ -15,13 +15,19 @@
             <h1>ALCOHOL TRACKER</h1>
             <p>Acceso Personal Privado</p>
             <form id="auth-form">
-                <input type="text" id="auth-name" placeholder="Tu Nombre Completo" style="display:none; margin-bottom: 12px; padding: 12px; width: 100%; background: #000; border: 1px solid #333; border-radius: 8px; color: #fff;">
-                
+                <input type="text" id="auth-name" placeholder="Tu Nombre Completo" style="display:none;">
                 <input type="email" id="auth-email" placeholder="Email" required>
                 <input type="password" id="auth-password" placeholder="Contraseña">
                 <p id="auth-error" class="error-msg"></p>
                 <button type="submit" id="btn-submit-auth">ENTRAR</button>
             </form>
+
+            <div style="margin: 20px 0; color: #444; font-size: 0.8rem;">O TAMBIÉN</div>
+
+            <button id="btn-google-auth" class="btn-google">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google"> Google
+            </button>
+            
             <div class="auth-switch">
                 <span id="auth-switch-text">¿No tienes cuenta?</span>
                 <button id="btn-toggle-auth">Regístrate</button>
@@ -33,19 +39,15 @@
         <header>
             <div class="header-top">
                 <h1 id="header-title">CONTROL MENSUAL</h1>
-                <button id="btn-logout" class="btn-logout">
-                    <span class="material-symbols-rounded">logout</span>
-                </button>
+                <button id="btn-logout" class="btn-logout"><span class="material-symbols-rounded">logout</span></button>
             </div>
             <h2 id="month-display">---</h2>
             <div class="total-pill">TOTAL AÑO: <span id="grand-total">0.00 L</span></div>
         </header>
 
         <div id="view-tracker" class="view-section active">
-            <div id="dashboard">
-                <div id="tracker-container"></div>
-                <div class="copyright">© 2026 Creado por <span>David Crespo Amaro</span></div>
-            </div>
+            <div id="tracker-container"></div>
+            <div class="copyright">© 2026 Creado por <span>David Crespo Amaro</span></div>
         </div>
 
         <div id="view-history" class="view-section" style="display: none;">
@@ -55,14 +57,12 @@
                     <button id="btn-sub-month" class="pill-btn">Diario Mes</button>
                 </div>
             </div>
-            
             <div id="subview-year">
                 <h3>Estadísticas Globales</h3>
                 <div id="stats-container" class="stats-card"></div>
                 <h3>Desglose por Meses</h3>
                 <div id="history-list"></div>
             </div>
-
             <div id="subview-month" style="display: none;">
                 <h3>Evolución Diaria (<span id="daily-month-name"></span>)</h3>
                 <div class="chart-container-x"><div id="daily-chart" class="chart-scroll"></div></div>

@@ -31,6 +31,31 @@ body {
 #auth-form input { width: 100%; padding: 12px; margin-bottom: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: #fff; outline: none; }
 #btn-submit-auth { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
+.btn-google {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-google img {
+    width: 18px;
+}
+
+.btn-google:hover {
+    background: #f1f1f1;
+}
+
 /* BOTÓN TOGGLE (ESTILO LINK) */
 .auth-switch { margin-top: 20px; font-size: 0.85rem; color: var(--text-dim); }
 #btn-toggle-auth {
