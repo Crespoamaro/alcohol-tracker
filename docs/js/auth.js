@@ -93,4 +93,4 @@ export function initAuth(onUserLogin, onUserLogout) {
         if (user) onUserLogin(user);
         else onUserLogout();
     });
-}   
+}

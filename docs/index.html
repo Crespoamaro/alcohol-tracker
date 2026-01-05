@@ -14,6 +14,7 @@
         <div class="auth-card">
             <h1>ALCOHOL TRACKER</h1>
             <p>Acceso Personal Privado</p>
+            
             <form id="auth-form">
                 <input type="text" id="auth-name" placeholder="Tu Nombre Completo" style="display:none; margin-bottom: 12px;">
                 <input type="email" id="auth-email" placeholder="Email" required>
@@ -40,6 +41,8 @@
                 <span id="auth-switch-text">¿No tienes cuenta?</span>
                 <button id="btn-toggle-auth">Regístrate</button>
             </div>
+
+            <div class="copyright" style="margin-top: 30px;">© 2026 Creado por <span>David Crespo Amaro</span></div>
         </div>
     </div>
 
@@ -61,30 +64,43 @@
         </div>
 
         <div id="view-history" class="view-section" style="display: none;">
+            
             <div class="pill-nav-container">
                 <div class="pill-nav">
                     <button id="btn-sub-year" class="pill-btn active">Resumen Año</button>
                     <button id="btn-sub-month" class="pill-btn">Diario Mes</button>
                 </div>
             </div>
+            
             <div id="subview-year">
                 <h3>Estadísticas Globales</h3>
                 <div id="stats-container" class="stats-card"></div>
+                
                 <h3>Desglose por Meses</h3>
-                <div id="history-list"></div>
-            </div>
+                <div id="history-list"></div> </div>
+
             <div id="subview-month" style="display: none;">
                 <h3>Evolución Diaria (<span id="daily-month-name"></span>)</h3>
-                <div class="chart-container-x"><div id="daily-chart" class="chart-scroll"></div></div>
+                <div class="chart-container-x">
+                    <div id="daily-chart"></div> </div>
+                
                 <h3>Registro de Tragos</h3>
                 <div id="recent-log-list"></div>
             </div>
+
+            <div class="copyright">© 2026 Creado por <span>David Crespo Amaro</span></div>
         </div>
     </div>
 
     <nav id="main-nav" class="bottom-nav" style="display: none;">
-        <button id="nav-tracker" class="nav-btn active"><span class="material-symbols-rounded">local_bar</span><span>Tracker</span></button>
-        <button id="nav-history" class="nav-btn"><span class="material-symbols-rounded">history</span><span>Historial</span></button>
+        <button id="nav-tracker" class="nav-btn active">
+            <span class="material-symbols-rounded">local_bar</span>
+            <span>Tracker</span>
+        </button>
+        <button id="nav-history" class="nav-btn">
+            <span class="material-symbols-rounded">history</span>
+            <span>Historial</span>
+        </button>
     </nav>
 
     <script type="module" src="js/main.js"></script>

@@ -37,7 +37,7 @@ export function updateTrackerList(currentMonthCounts) {
             const row = document.createElement('div');
             row.className = 'drink-row';
             row.innerHTML = `
-                <div class="drink-info"><span class="drink-name">${item.name}</span><span class="drink-vol-total">${count > 0 ? totalLitersItem + ' L' : ''}</span></div>
+                <div class="drink-info"><span class="drink-name">${item.name}</span><span class="drink-vol-total"> ${count > 0 ? totalLitersItem + ' L' : ''}</span></div>
                 <div class="drink-controls">
                     <button class="btn-ctrl btn-minus"><span class="material-symbols-rounded">remove</span></button>
                     <span class="count-display ${count > 0 ? 'has-items' : ''}">${count}</span>
@@ -50,15 +50,16 @@ export function updateTrackerList(currentMonthCounts) {
     }
 }
 
+// ESTADÍSTICAS GLOBALES (Resumen Año)
 export function renderStats(categorySums, grandTotal) {
     const container = document.getElementById('stats-container');
     if (!container) return;
     container.innerHTML = '';
     const stats = [
-        { label: 'Cervezas', val: categorySums.beers, css: 'fill-beers' },
-        { label: 'Cubatas', val: categorySums.spirits, css: 'fill-spirits' },
-        { label: 'Chupitos', val: categorySums.shots, css: 'fill-shots' },
-        { label: 'Vinos/Otros', val: categorySums.others, css: 'fill-others' }
+        { label: 'Cervezas', val: categorySums.beers || 0, css: 'fill-beers' },
+        { label: 'Cubatas', val: categorySums.spirits || 0, css: 'fill-spirits' },
+        { label: 'Chupitos', val: categorySums.shots || 0, css: 'fill-shots' },
+        { label: 'Vinos/Otros', val: categorySums.others || 0, css: 'fill-others' }
     ];
     stats.forEach(s => {
         const pct = grandTotal > 0 ? (s.val / grandTotal) * 100 : 0;
@@ -71,32 +72,91 @@ export function renderStats(categorySums, grandTotal) {
     });
 }
 
-export function renderHistory(monthlySums) {
-    const container = document.getElementById('history-list');
-    if (!container) return;
-    container.innerHTML = '';
-    monthlySums.forEach((total, idx) => {
-        if (total > 0 || idx <= currentMonthIdx) {
-            const card = document.createElement('div');
-            card.className = `history-card ${idx === currentMonthIdx ? 'current' : ''}`;
-            card.innerHTML = `<span class="month-name">${monthsNames[idx]}</span><span class="month-total">${total.toFixed(3)} L</span>`;
-            container.appendChild(card);
-        }
-    });
-}
-
+// EVOLUCIÓN DIARIA (Hasta el día de hoy con barras horizontales)
 export function renderDailyChart(dailySums) {
     const container = document.getElementById('daily-chart');
     const label = document.getElementById('daily-month-name');
     if (!container || !label) return;
+    
     container.innerHTML = '';
     label.textContent = monthsNames[currentMonthIdx];
-    const max = Math.max(...dailySums, 0.5);
-    dailySums.forEach((v, i) => {
-        const bar = document.createElement('div');
-        bar.className = 'bar-group';
-        bar.innerHTML = `<span class="bar-val">${v > 0 ? v.toFixed(1) : ''}</span><div class="bar-visual ${v > 0 ? 'active' : ''}" style="height: ${(v/max)*100}%"></div><span class="bar-day">${i+1}</span>`;
-        container.appendChild(bar);
+
+    const today = new Date().getDate();
+    const maxVal = Math.max(...dailySums.slice(0, today), 0.1);
+
+    for (let i = 0; i < today; i++) {
+        const v = dailySums[i] || 0;
+        const pct = (v / maxVal) * 100;
+        const isToday = (i + 1) === today;
+        
+        const div = document.createElement('div');
+        div.className = 'stat-row';
+        div.innerHTML = `
+            <div class="stat-header">
+                <span style="${isToday ? 'color:var(--success); font-weight:bold;' : ''}">Día ${i + 1} ${isToday ? '(Hoy)' : ''}</span>
+                <span class="stat-val">${v.toFixed(2)} L</span>
+            </div>
+            <div class="progress-bg">
+                <div class="progress-fill ${isToday ? 'fill-today' : 'fill-daily'}" style="width: ${pct}%"></div>
+            </div>`;
+        container.appendChild(div);
+    }
+}
+
+// HISTORIAL CON DESGLOSE Y BORDES REDONDEADOS
+export function renderHistory(monthlySums) {
+    const container = document.getElementById('history-list');
+    if (!container) return;
+    container.innerHTML = '';
+    const sortedIdx = Object.keys(monthlySums).sort((a, b) => b - a);
+
+    sortedIdx.forEach(idx => {
+        const data = monthlySums[idx];
+        const totalL = data.total || 0;
+        const isCurrentMonth = parseInt(idx) === currentMonthIdx;
+
+        if (totalL > 0 || parseInt(idx) <= currentMonthIdx) {
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            
+            item.style.borderRadius = "12px";
+            item.style.border = "1px solid var(--border)";
+            item.style.marginBottom = "10px";
+            item.style.overflow = "hidden";
+
+            const breakdownHtml = Object.entries(data.breakdown || {})
+                .filter(([_, qty]) => qty > 0)
+                .map(([name, qty]) => `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 20px; font-size: 0.85rem; border-bottom: 1px solid #222; color: var(--text-dim);">
+                        <span>${name}</span>
+                        <span>${qty} uds</span>
+                    </div>`).join('');
+
+            item.innerHTML = `
+                <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; cursor: pointer; background: #1a1a1a; border-radius: 12px;">
+                    <span class="month-name">${monthsNames[idx]} ${isCurrentMonth ? '(Actual)' : ''}</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="month-total" style="font-weight: bold; color: var(--accent);"> ${totalL.toFixed(3)} L</span>
+                        <span class="material-symbols-rounded arrow" style="font-size:18px; transition: transform 0.3s;">expand_more</span>
+                    </div>
+                </div>
+                <div class="history-details" style="max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #121212;">
+                    ${breakdownHtml || '<div style="padding:15px; text-align:center; font-size:0.8rem; color:#666;">Sin registros detallados</div>'}
+                </div>`;
+
+            const header = item.querySelector('.history-header');
+            const details = item.querySelector('.history-details');
+            const arrow = item.querySelector('.arrow');
+
+            header.onclick = () => {
+                const isOpen = details.style.maxHeight !== "0px" && details.style.maxHeight !== "";
+                details.style.maxHeight = isOpen ? "0px" : "600px";
+                arrow.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+                // Ajuste dinámico del radio inferior al abrir/cerrar
+                header.style.borderRadius = isOpen ? "12px" : "12px 12px 0 0";
+            };
+            container.appendChild(item);
+        }
     });
 }
 
