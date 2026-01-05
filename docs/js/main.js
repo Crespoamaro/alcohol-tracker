@@ -26,7 +26,6 @@ initAuth(
             if (appView) appView.style.display = 'flex';
             if (mainNav) mainNav.style.display = 'flex';
 
-            // Personalización del saludo
             if (headerTitle) {
                 const firstName = user.displayName ? user.displayName.split(' ')[0] : "USUARIO";
                 headerTitle.textContent = `HOLA, ${firstName.toUpperCase()}`;

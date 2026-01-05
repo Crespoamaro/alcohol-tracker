@@ -31,30 +31,24 @@ body {
 #auth-form input { width: 100%; padding: 12px; margin-bottom: 12px; background: #000; border: 1px solid #333; border-radius: 8px; color: #fff; outline: none; }
 #btn-submit-auth { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
+.separator { margin: 20px 0; color: #444; font-size: 0.7rem; letter-spacing: 1px; }
+
+.btn-link-small {
+    background: none; border: none; color: var(--text-dim);
+    font-size: 0.75rem; cursor: pointer; text-decoration: underline;
+    padding: 0;
+}
+
 .btn-google {
-    width: 100%;
-    padding: 12px;
-    background: white;
-    color: #333;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    font-size: 0.9rem;
-    transition: background 0.2s;
+    width: 100%; padding: 12px; background: white; color: #333;
+    border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    font-size: 0.9rem; transition: background 0.2s;
 }
 
-.btn-google img {
-    width: 18px;
-}
+.btn-google img { width: 20px; height: 20px; }
 
-.btn-google:hover {
-    background: #f1f1f1;
-}
+.error-msg { font-size: 0.8rem; margin: 10px 0; min-height: 1em; }
 
 /* BOTÓN TOGGLE (ESTILO LINK) */
 .auth-switch { margin-top: 20px; font-size: 0.85rem; color: var(--text-dim); }

@@ -5,15 +5,14 @@ import {
     signOut, 
     onAuthStateChanged,
     GoogleAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const googleProvider = new GoogleAuthProvider();
 
-export async function logoutUser() {
-    return await signOut(auth);
-}
+export async function logoutUser() { return await signOut(auth); }
 
 export function initAuth(onUserLogin, onUserLogout) {
     const form = document.getElementById('auth-form');
@@ -24,36 +23,43 @@ export function initAuth(onUserLogin, onUserLogout) {
     const btnSubmit = document.getElementById('btn-submit-auth');
     const btnToggle = document.getElementById('btn-toggle-auth');
     const btnGoogle = document.getElementById('btn-google-auth');
+    const btnForgot = document.getElementById('btn-forgot-pass');
     const switchText = document.getElementById('auth-switch-text');
     
     let isRegistering = false;
 
-    // LOGIN CON GOOGLE
-    if (btnGoogle) {
-    btnGoogle.onclick = async () => {
-        try {
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            
-            // Importante: El nombre de Google puede tener puntos o espacios
-            const userDocName = user.displayName || user.email.split('@')[0];
-            const userRef = doc(db, "usuarios", userDocName);
-            
-            // Forzamos la actualización del UID para que las reglas de seguridad no nos bloqueen
-            await setDoc(userRef, {
-                uid: user.uid,
-                email: user.email,
-                nombre: userDocName,
-                fechaRegistro: new Date()
-            }, { merge: true }); // 'merge: true' evita borrar datos si ya existía
-            
-        } catch (error) {
-            console.error("Error en Google Auth:", error);
-            if (errorMsg) errorMsg.textContent = "Error al conectar con Google.";
-        }
-    };
-}
+    // RECUPERAR CLAVE
+    if (btnForgot) {
+        btnForgot.onclick = async () => {
+            const email = emailInput.value;
+            if (!email) {
+                errorMsg.textContent = "Introduce tu email primero.";
+                errorMsg.style.color = "yellow";
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                errorMsg.textContent = "Email de recuperación enviado.";
+                errorMsg.style.color = "lightgreen";
+            } catch (e) { errorMsg.textContent = "Error al enviar email."; }
+        };
+    }
 
+    // GOOGLE
+    if (btnGoogle) {
+        btnGoogle.onclick = async () => {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                const userDocName = user.displayName || user.email.split('@')[0];
+                await setDoc(doc(db, "usuarios", userDocName), {
+                    uid: user.uid, email: user.email, nombre: userDocName, fechaRegistro: new Date()
+                }, { merge: true });
+            } catch (e) { errorMsg.textContent = "Error con Google."; }
+        };
+    }
+
+    // TOGGLE REGISTRO/LOGIN
     if (btnToggle) {
         btnToggle.onclick = (e) => {
             e.preventDefault();
@@ -61,32 +67,25 @@ export function initAuth(onUserLogin, onUserLogout) {
             btnSubmit.textContent = isRegistering ? "CREAR CUENTA" : "ENTRAR";
             switchText.textContent = isRegistering ? "¿Ya tienes cuenta?" : "¿No tienes cuenta?";
             btnToggle.textContent = isRegistering ? "Inicia sesión" : "Regístrate";
-            if (nameInput) nameInput.style.display = isRegistering ? "block" : "none";
+            nameInput.style.display = isRegistering ? "block" : "none";
+            nameInput.required = isRegistering;
         };
     }
 
     if (form) {
         form.onsubmit = async (e) => {
             e.preventDefault();
-            const email = emailInput.value;
-            const password = passInput.value;
-            const userName = nameInput ? nameInput.value.trim() : "";
-
+            errorMsg.style.color = "red";
             try {
                 if (isRegistering) {
-                    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                    await setDoc(doc(db, "usuarios", userName), {
-                        uid: userCred.user.uid,
-                        email: email,
-                        nombre: userName,
-                        fechaRegistro: new Date()
+                    const res = await createUserWithEmailAndPassword(auth, emailInput.value, passInput.value);
+                    await setDoc(doc(db, "usuarios", nameInput.value.trim()), {
+                        uid: res.user.uid, email: emailInput.value, nombre: nameInput.value.trim(), fechaRegistro: new Date()
                     });
                 } else {
-                    await signInWithEmailAndPassword(auth, email, password);
+                    await signInWithEmailAndPassword(auth, emailInput.value, passInput.value);
                 }
-            } catch (error) {
-                errorMsg.textContent = "Datos no válidos.";
-            }
+            } catch (e) { errorMsg.textContent = "Error de acceso."; }
         };
     }
 
@@ -94,4 +93,4 @@ export function initAuth(onUserLogin, onUserLogout) {
         if (user) onUserLogin(user);
         else onUserLogout();
     });
-}
+}   
